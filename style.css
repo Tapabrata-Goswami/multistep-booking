@@ -1,0 +1,137 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+.main-form-container,#submitted-details{
+    font-family: 'Montserrat', sans-serif;
+}
+
+.card-header > h4{
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.form-group > label{
+    font-size: 14px;
+}
+
+.form-group > label::after{
+    content:"*";
+    color: red;
+    padding-left: 5px;
+}
+
+select.form-control {
+    font-family: 'Montserrat', sans-serif !important;
+    font-size: 14px;
+}
+
+select.form-control option {
+    font-family: 'Montserrat', sans-serif !important;
+    font-size: 14px;
+}
+
+#add-traveler-btn{
+    padding:8px 30px;
+    font-size: 14px;
+    background-color: #f9ae78;
+    border: none;
+    outline: none;
+}
+.custom-file {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* Hide the default file input */
+.custom-file-input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Style the label to look like a text field with a button */
+.custom-file-label {
+    display: block;
+    width: 100%;
+    padding: 4px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: #fff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    color: #495057;
+    cursor: pointer;
+}
+
+/* Add hover effects */
+.custom-file-label:hover {
+    background-color: #f8f9fa;
+}
+
+/* Style for showing selected file name */
+.custom-file-input:focus + .custom-file-label {
+    border-color: #ffd09e;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Additional styling to make the label resemble a text input field */
+.custom-file-label::after {
+    content: 'Browse';
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 5px 20px;
+    background-color: #fdd3a9;
+    color: #fff;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}
+
+.divider{
+    margin-top: 40px;
+    background-color: #b9b8b8;
+}
+
+.card-heading-container{
+    text-align: left;
+}
+
+.form-group > label{
+    display: flex;
+    justify-content: start;
+}
+
+.form-group input:nth-of-type(3) {
+    display: none;
+}
+
+#next{
+    padding: 5px 90px;
+    font-size: 15px;
+    background-color: #eb8f62;
+    outline: none;
+    border: none;
+}
+
+#submit{
+    padding: 5px 90px;
+    font-size: 15px;
+    background-color: #eb8f62;
+    outline: none;
+    border: none;
+}
+
+.table-of-total > tbody > tr > th,.table-of-total > tfoot > tr > th {
+    font-size: 12px !important;
+    font-weight:600 !important;
+}
+
+
+.sticky-part{
+    position: sticky !important;
+    top: 0;
+    height: fit-content;
+}
