@@ -1,22 +1,7 @@
-# Multistep Booking Form Plugin
+# 🚀 Multistep Booking Form Plugin
 
 A seamless multistep booking form integrated with the Stripe payment gateway for secure transactions.
 
-## Table of Contents
-1. [Features](#features)
-2. [Requirements](#requirements)
-3. [Installation](#installation)
-   - [Clone the Repository](#clone-the-repository)
-   - [Navigate to the Plugin Directory](#navigate-to-the-plugin-directory)
-   - [Install Dependencies with Composer](#install-dependencies-with-composer)
-   - [Upload the Plugin to WordPress](#upload-the-plugin-to-wordpress)
-   - [Activate the Plugin](#activate-the-plugin)
-   - [Configure Stripe Settings](#configure-stripe-settings)
-   - [Add Booking Form to a Page](#add-booking-form-to-a-page)
-   - [Test the Plugin](#test-the-plugin)
-4. [Usage](#usage)
-5. [Support](#support)
-6. [License](#license)
 
 ## Features
 - Multistep booking process
@@ -28,7 +13,7 @@ A seamless multistep booking form integrated with the Stripe payment gateway for
 - PHP 7.0 or higher
 - Composer
 
-## Installation
+## 📄 Installation
 
 
 ```bash
@@ -48,15 +33,15 @@ pk_test_51BTUDGJAJfZb9HEBwDg86TN1KNprHjkfipXmEDMb0gSCassK5T3ZfxsAbcgKVmAIXF7oZ6I
 sk_test_tR3PYbcVNZZ796tH88S4VQ2u
 ```
 
-For more details, visit the official Stripe documentation [here](https://docs.stripe.com/checkout/embedded/quickstart).
+🔗 For more details, visit the official Stripe documentation [here](https://docs.stripe.com/checkout/embedded/quickstart).
 
 ##  Run Your Local Server
 
 ```bash
 php -S localhost:5555
-````
+```
 
-## 🤝 Support
+## ❤️ Support
 For issues, please create an issue in the [GitHub repository](https://github.com/Tapabrata-Goswami/multistep-booking/issues).
 
 ## Follow Me
