@@ -99,22 +99,19 @@ jQuery(document).ready(function($) {
         // Clear previous details
         $('#traveler-details-list').html('');
 
-        var hasIncompleteInfo = false; // Flag to check if any traveler card is incomplete
-        var travelerCount = 0; // Counter for the number of valid travelers
-        // const costPerTraveler = 100; // Cost per traveler
-
-        // Function to handle file reading and Base64 conversion
+        var hasIncompleteInfo = false; 
+        var travelerCount = 0;
         function readFileAsBase64(file) {
             return new Promise(function(resolve, reject) {
                 if (file) {
                     var reader = new FileReader();
                     reader.onloadend = function() {
-                        resolve(reader.result); // Return the Base64 encoded file content
+                        resolve(reader.result); 
                     };
                     reader.onerror = reject;
-                    reader.readAsDataURL(file); // Convert file to Base64
+                    reader.readAsDataURL(file);
                 } else {
-                    resolve(null); // No file, resolve as null
+                    resolve(null); 
                 }
             });
         }
@@ -125,21 +122,50 @@ jQuery(document).ready(function($) {
             var lastName = $(this).find('input[name="last-name"]').val();
             var dob = $(this).find('input[name="dob"]').val();
             var gender = $(this).find('select[name="gender"]').val();
-
+            
             // Fetch file inputs
             var passportFile = $(this).find('input[name="passport"]')[0].files[0];
+            console.log(passportFile);
             var photoFile = $(this).find('input[name="photo"]')[0].files[0];
 
-            // Skip any traveler card with incomplete information
-            if (!firstName || !lastName || !dob || !gender) {
-                alert('Please fill out all fields for traveler ' + (index + 1));
+            if (!firstName) {
+                $(this).find('input[name="first-name"]').next('.invalid-feedback').show();
                 hasIncompleteInfo = true;
-                return false; // Stop processing if incomplete
+            }
+            if (!lastName) {
+                $(this).find('input[name="last-name"]').next('.invalid-feedback').show();
+                hasIncompleteInfo = true;
+            }
+            if (!dob || dob === undefined) {
+                $(this).find('input[type="text"][placeholder="Date of Birth"]').next('.invalid-feedback').show();
+                hasIncompleteInfo = true;
+            }
+            if (!gender) {
+                $(this).find('select[name="gender"]').next('.invalid-feedback').show();
+                hasIncompleteInfo = true;
+            }
+    
+            // Validate passport file (must be an image)
+            if (!passportFile || !passportFile.type.startsWith('image/')) {
+                $(this).find('input[name="passport"]').next('label').next('.invalid-feedback').show();
+                hasIncompleteInfo = true;
+            }
+    
+            // Validate photo file (must be an image)
+            if (!photoFile || !photoFile.type.startsWith('image/')) {
+                $(this).find('input[name="photo"]').next('label').next('.invalid-feedback').show();
+                hasIncompleteInfo = true;
             }
 
-            travelerCount++; // Increment the traveler count for valid travelers
+            // Skip any traveler card with incomplete information
+            // if (!firstName || !lastName || !dob || !gender) {
+            //     alert('Please fill out all fields for traveler ' + (index + 1));
+            //     hasIncompleteInfo = true;
+            //     return false; // Stop processing if incomplete
+            // }
 
-            // Return a promise that processes files and generates the summary
+            travelerCount++;
+
             return Promise.all([
                 readFileAsBase64(passportFile),
                 readFileAsBase64(photoFile)

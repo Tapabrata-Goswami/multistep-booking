@@ -114,12 +114,20 @@ function multistep_form_shortcode() {
                                 <div class="form-group">
                                     <label for="">First Name</label>
                                     <input type="text" class="form-control" placeholder="First Name" name="first-name" id="">
+                                    <div class="invalid-feedback">
+                                        <div class="d-flex justify-content-start">
+                                        First name is required.
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="">Last Name</label>
                                     <input type="text" class="form-control" placeholder="Last Name" name="last-name" id="">
+                                    <div class="invalid-feedback">
+                                        <div class="d-flex justify-content-start">Last name is required.</div>
+                                    </div>
                                 </div>
                             </div>
                             
@@ -129,7 +137,13 @@ function multistep_form_shortcode() {
                                 <div class="form-group">
                                     <label for="">Date of birth</label>
                                     <input type="text" class="form-control" placeholder="Date of Birth" name="dob" id="dob" data-toggle="flatpickr">
+                                    <div class="invalid-feedback">
+                                        <div class="d-flex justify-content-start">
+                                        Date of birth is required.
+                                        </div>
+                                    </div>
                                 </div>
+                                
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -139,6 +153,11 @@ function multistep_form_shortcode() {
                                         <option value="male">Male</option>
                                         <option value="female">Female</option>
                                     </select>
+                                    <div class="invalid-feedback">
+                                        <div class="d-flex justify-content-start">
+                                            Gender is required.
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             
@@ -150,7 +169,13 @@ function multistep_form_shortcode() {
                                     <div class="custom-file">
                                         <input type="file" class="custom-file-input" id="passport" onchange="showFileName(this)" name="passport">
                                         <label class="custom-file-label" for="passport">Choose file</label>
+                                        <div class="invalid-feedback">
+                                            <div class="d-flex justify-content-start">
+                                                Passport image is required and must be an image file.
+                                            </div>
+                                        </div>
                                     </div>
+                                    
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -159,6 +184,12 @@ function multistep_form_shortcode() {
                                     <div class="custom-file">
                                         <input type="file" class="custom-file-input" id="photo" onchange="showFileName(this)" name="photo">
                                         <label class="custom-file-label" for="photo">Choose file</label>
+                                        
+                                        <div class="invalid-feedback">
+                                            <div class="d-flex justify-content-start">
+                                                Photo is required and must be an image file.
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
