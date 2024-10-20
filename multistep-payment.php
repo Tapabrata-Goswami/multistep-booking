@@ -10,7 +10,6 @@
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  */
 
-// Check if Bootstrap is already loaded and enqueue it if not
 function multistep_form_enqueue_bootstrap() {
     global $wp_styles;
 
@@ -99,11 +98,15 @@ function multistep_form_shortcode() {
     <!-- Multi Step form start-->
     <div class="container-fluid main-form-container">
         <div class="container p-5">
-            <form id="traveler-form" action="">
+            <div class="col-12 d-flex align-items-center">
+                <h4 class="mb-0 main-heading-form">Your personal details</h4>
+                <div style="flex-grow: 1; height: 1px; background-color: #ccc; margin-left: 10px;"></div>
+            </div>
+            <form id="traveler-form" class="mt-5" action="">
                 <!-- First Traveler Card -->
                 <div class="traveler-card">
                     <div class="card-header pb-3 card-heading-container">
-                        <h4 class="h5">Primary Traveler</h4>
+                        <h4 class="h5" style="color:#545454;">Primary Traveler</h4>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -135,7 +138,6 @@ function multistep_form_shortcode() {
                                         <option value="">Select Gender</option>
                                         <option value="male">Male</option>
                                         <option value="female">Female</option>
-                                        <option value="other">Other</option>
                                     </select>
                                 </div>
                             </div>
@@ -167,29 +169,18 @@ function multistep_form_shortcode() {
                 <!-- Add Traveler Button -->
                 <div class="row mt-2">
                     <div class="col-md-12 text-center">
-                        <button type="button" id="add-traveler-btn" class="btn btn-lg btn-primary text-center">
+                        <button type="button" id="add-traveler-btn" class="btn btn-outline-primary text-center">
                             <i class="fas fa-user-plus"></i> Add Traveler
                         </button>
                     </div>
                 </div>
-                <div class="row pt-3">
+                <div class="row pt-5">
                     <div class="col-md-6">
-                        <label for=""></label>
                         <div class="form-group">
                             <label for="">Phone</label>
                             <input type="tel" placeholder="Enter your phone number" class="form-control" name="phone" id="">
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <label for=""></label>
-                        <div class="form-group">
-                            <label for="">Email</label>
-                            <input type="email" placeholder="Enter your email address" class="form-control" name="email" id="">
-                        </div>
-                    </div>
-                </div>
-                <div class="row pt-3">
-                    
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="">Date of Arrival</label>
@@ -197,6 +188,22 @@ function multistep_form_shortcode() {
                         </div>
                     </div>
                     
+                </div>
+                <div class="row">
+                        <div class="col-md-6">
+                            <label for=""></label>
+                            <div class="form-group">
+                                <label for="">Email</label>
+                                <input type="email" placeholder="Enter your email address" class="form-control" name="email" id="">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for=""></label>
+                            <div class="form-group">
+                                <label for="">Confirm Email</label>
+                                <input type="email" placeholder="Enter your email address" class="form-control" name="email" id="">
+                            </div>
+                        </div>
                 </div>
                 <hr class="divider">
                 <div class="row mt-5">
@@ -214,7 +221,7 @@ function multistep_form_shortcode() {
     <div class="container-fluid p-5">
         <div id="submitted-details" class="container pt-5" style="display:none">
             
-            <div class="row">
+            <div class="row gap-">
                 
                 <div class="col-md-6">
                     <h3>Traveler Details</h3>
@@ -258,10 +265,14 @@ function multistep_form_shortcode() {
                         </div>
                     </div>
 
-                        <div class="row mt-5">
-                            <h4>Stripe Checkout</h4>
-                            <!-- <button id="checkout-button" class="btn btn-success">Checkout</button> -->
+                    <div class="row mt-5 mb-3">
+                        <div class="col-12 d-flex align-items-center">
+                            <h4 class="mb-0">Stripe Checkout</h4>
+                            <div style="flex-grow: 1; height: 1px; background-color: #ccc; margin-left: 10px;"></div>
                         </div>
+                    </div>
+                    
+
 
                         <div id="stripe-checkout-element"></div>
 
@@ -269,7 +280,7 @@ function multistep_form_shortcode() {
                             <div id="payment-element">
                                 <!-- Stripe.js injects the Payment Element here -->
                             </div>
-                            <button id="submit">Pay</button>
+                            <button class="btn btn-primary mt-3" id="submit">Pay</button>
                             <div id="error-message"></div>
                         </form>
                     </div>

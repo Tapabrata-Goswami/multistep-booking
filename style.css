@@ -30,11 +30,8 @@ select.form-control option {
 }
 
 #add-traveler-btn{
-    padding:8px 30px;
+    padding:6px 25px;
     font-size: 14px;
-    background-color: #f9ae78;
-    border: none;
-    outline: none;
 }
 .custom-file {
     position: relative;
@@ -73,7 +70,7 @@ select.form-control option {
 
 /* Style for showing selected file name */
 .custom-file-input:focus + .custom-file-label {
-    border-color: #ffd09e;
+    border-color: #066aab;
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
@@ -84,11 +81,30 @@ select.form-control option {
     top: 0;
     right: 0;
     padding: 5px 20px;
-    background-color: #fdd3a9;
+    background-color: #066aab;
     color: #fff;
     border-radius: 0 4px 4px 0;
     cursor: pointer;
 }
+
+.main-heading-form{
+    font-size: 20px;
+    font-weight: 700;
+}
+
+h5{
+    color: #545454 !important;
+}
+
+/* .main-heading-form-line::after{
+    display: inline-block;
+    content: "";
+    width: 70%;
+    height: 2px;
+    background-color: #495057;
+    position: absolute;
+    top: 43px;
+} */
 
 .divider{
     margin-top: 40px;
@@ -111,17 +127,18 @@ select.form-control option {
 #next{
     padding: 5px 90px;
     font-size: 15px;
-    background-color: #eb8f62;
-    outline: none;
-    border: none;
+    /* background-color: #066aab; */
 }
+
+.remove-traveler-btn{
+    font-size: 12px;
+    padding: 4px 10px;
+}
+
 
 #submit{
     padding: 5px 90px;
     font-size: 15px;
-    background-color: #eb8f62;
-    outline: none;
-    border: none;
 }
 
 .table-of-total > tbody > tr > th,.table-of-total > tfoot > tr > th {
