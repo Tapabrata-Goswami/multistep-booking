@@ -210,12 +210,22 @@ function multistep_form_shortcode() {
                         <div class="form-group">
                             <label for="">Phone</label>
                             <input type="tel" placeholder="Enter your phone number" class="form-control" name="phone" id="">
+                            <div class="invalid-feedback">
+                                <div class="d-flex justify-content-start">
+                                Phone number is required.
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="">Date of Arrival</label>
                             <input type="text" class="form-control" placeholder="Date of Arrival" name="arrival" id="arrival" data-toggle="flatpickr">
+                            <div class="invalid-feedback">
+                                <div class="d-flex justify-content-start">
+                                Please select a date of arrival.
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -226,13 +236,23 @@ function multistep_form_shortcode() {
                             <div class="form-group">
                                 <label for="">Email</label>
                                 <input type="email" placeholder="Enter your email address" class="form-control" name="email" id="">
+                                <div class="invalid-feedback">
+                                    <div class="d-flex justify-content-start">
+                                    Valid email is required.
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <label for=""></label>
                             <div class="form-group">
                                 <label for="">Confirm Email</label>
-                                <input type="email" placeholder="Enter your email address" class="form-control" name="email" id="">
+                                <input type="email" placeholder="Enter your email address" class="form-control" name="conemail" id="">
+                                <div class="invalid-feedback">
+                                    <div class="d-flex justify-content-start">
+                                    Email addresses must match.
+                                    </div>
+                                </div>
                             </div>
                         </div>
                 </div>

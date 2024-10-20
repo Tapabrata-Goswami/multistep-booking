@@ -125,35 +125,41 @@ jQuery(document).ready(function($) {
             
             // Fetch file inputs
             var passportFile = $(this).find('input[name="passport"]')[0].files[0];
-            console.log(passportFile);
+            // console.log(passportFile);
             var photoFile = $(this).find('input[name="photo"]')[0].files[0];
 
             if (!firstName) {
                 $(this).find('input[name="first-name"]').next('.invalid-feedback').show();
+                hidemessage();
                 hasIncompleteInfo = true;
             }
             if (!lastName) {
                 $(this).find('input[name="last-name"]').next('.invalid-feedback').show();
+                hidemessage();
                 hasIncompleteInfo = true;
             }
             if (!dob || dob === undefined) {
                 $(this).find('input[type="text"][placeholder="Date of Birth"]').next('.invalid-feedback').show();
+                hidemessage();
                 hasIncompleteInfo = true;
             }
             if (!gender) {
                 $(this).find('select[name="gender"]').next('.invalid-feedback').show();
+                hidemessage();
                 hasIncompleteInfo = true;
             }
     
             // Validate passport file (must be an image)
             if (!passportFile || !passportFile.type.startsWith('image/')) {
                 $(this).find('input[name="passport"]').next('label').next('.invalid-feedback').show();
+                hidemessage();
                 hasIncompleteInfo = true;
             }
     
             // Validate photo file (must be an image)
             if (!photoFile || !photoFile.type.startsWith('image/')) {
                 $(this).find('input[name="photo"]').next('label').next('.invalid-feedback').show();
+                hidemessage();
                 hasIncompleteInfo = true;
             }
 
@@ -176,18 +182,37 @@ jQuery(document).ready(function($) {
                 var summaryHtml = `
                     <div class="card mt-3">
                         <div class="card-header">
-                            <h4 class="h5">Traveler ${index + 1}</h4>
+                            <h4 class="h5 m-0">Traveler ${index + 1}</h4>
                         </div>
                         <div class="card-body">
-                            <p><strong>First Name:</strong> ${firstName}</p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>First Name:</strong> ${firstName}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Last Name:</strong> ${lastName}
+                                </div>
+                            </div>
                             <hr>
-                            <p><strong>Last Name:</strong> ${lastName}</p>
-                            <p><strong>Date of Birth:</strong> ${dob}</p>
-                            <p><strong>Gender:</strong> ${gender}</p>
-                            <p><strong>Passport File:</strong><br>
-                            ${passportBase64 ? `<img src="${passportBase64}" alt="Passport" width="100">` : 'No file uploaded'}</p>
-                            <p><strong>Photo File:</strong><br>
-                            ${photoBase64 ? `<img src="${photoBase64}" alt="Photo" width="100">` : 'No file uploaded'}</p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Date of Birth:</strong> ${dob}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Gender:</strong> ${gender}
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Passport File:</strong><br>
+                            ${passportBase64 ? `<img src="${passportBase64}" alt="Passport" width="100">` : 'No file uploaded'}
+                                </div>
+                                <div class="col-md-6">
+                                   <strong>Photo File:</strong><br>
+                            ${photoBase64 ? `<img src="${photoBase64}" alt="Photo" width="100">` : 'No file uploaded'}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -195,19 +220,67 @@ jQuery(document).ready(function($) {
             });
         }).get();
 
-        if (hasIncompleteInfo) return; // Stop if any info was incomplete
+        // if (hasIncompleteInfo) return; // Stop if any info was incomplete
 
         // Wait for all traveler processing to finish
         Promise.all(travelerPromises).then(function() {
             // Collect general details outside the traveler cards (phone, email, arrival date)
             var phone = $('input[name="phone"]').val();
             var email = $('input[name="email"]').val();
+            var confirmEmail = $('input[name="conemail"]').val();
             var arrivalDate = $('#arrival').val();
+            var hasError = false;
 
-            if (!phone || !email || !arrivalDate) {
-                alert('Please fill in all general details.');
+            // Phone validation
+            if (!phone || !/^\+?[0-9]{1,4}?[-.\s]?[0-9]{10}$/.test(phone)) {
+                $('input[name="phone"]').addClass('is-invalid');
+                $('input[name="phone"]').next('.invalid-feedback').text('Please enter a valid 10-digit phone number.').show();
+                hidemessage();
+                hasError = true;
+            } else {
+                $('input[name="phone"]').removeClass('is-invalid');
+                $('input[name="phone"]').next('.invalid-feedback').hide();
+            }
+
+            // Email validation
+            if (!email || email ==" " || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                console.log(email);
+                $('input[name="email"]').addClass('is-invalid');
+                $('input[name="email"]').next('.invalid-feedback').text('Please enter a valid email address.').show();
+                hidemessage();
+                hasError = true;
+            } else {
+                $('input[name="email"]').removeClass('is-invalid');
+                $('input[name="email"]').next('.invalid-feedback').hide();
+            }
+
+            // Confirm email validation
+            if (email !== confirmEmail) {
+                $('input[name="email"]').last().addClass('is-invalid');
+                $('input[name="email"]').last().next('.invalid-feedback').text('The email addresses do not match.').show();
+                hidemessage();
+                hasError = true;
+            } else {
+                $('input[name="email"]').last().removeClass('is-invalid');
+                $('input[name="email"]').last().next('.invalid-feedback').hide();
+            }
+
+            // Date of arrival validation
+            if (!arrivalDate) {
+                $('input[type="text"][placeholder="Date of Arrival"]').addClass('is-invalid');
+                $('input[type="text"][placeholder="Date of Arrival"]').next('.invalid-feedback').text('Please select a date of arrival.').show();
+                hidemessage();
+                hasError = true;
+            } else {
+                $('#arrival').removeClass('is-invalid');
+                $('#arrival').next('.invalid-feedback').hide();
+            }
+
+            // If there is any error, stop processing
+            if (hasError) {
                 return;
             }
+            if (hasIncompleteInfo) return;
 
             // Calculate total cost
             // var totalCost = travelerCount * costPerTraveler;
@@ -216,16 +289,37 @@ jQuery(document).ready(function($) {
             var generalDetailsHtml = `
                 <div class="card mt-3">
                     <div class="card-header">
-                        <h4 class="h5">General Details</h4>
+                        <h4 class="h5 m-0">General Details</h4>
                     </div>
-                    <div class="card-body">
-                        
-                        <p class="p"><strong>Phone:</strong> ${phone}</p>
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                Phone
+                            </div>
+                            <div class="col-md-6">
+                                ${phone}
+                            </div>
+                        </div>
                         <hr>
-                        <p><strong>Email:</strong> ${email}</p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                Email
+                            </div>
+                            <div class="col-md-6">
+                            ${email}
+                            </div>
+                        </div>
                         <hr>
-                        <p><strong>Date of Arrival:</strong> ${arrivalDate}</p>
-                        
+                    
+                        <div class="row">
+                            <div class="col-md-6">
+                                Arrival date
+                            </div>
+                            <div class="col-md-6">
+                            ${arrivalDate}
+                            </div>
+                        </div>
+                    
                     </div>
                 </div>
             `;
@@ -250,6 +344,7 @@ jQuery(document).ready(function($) {
             }
         });
 
+        
 
         $('input[name="service"]').prop('checked', false); // Uncheck all options
         $('#standardService').prop('checked', true); // Set the standard service (60 dollars) as checked
@@ -287,5 +382,10 @@ jQuery(document).ready(function($) {
         $('.table-of-total tfoot th:nth-child(3)').text(`$${totalCost.toFixed(2)}`);
     });
 
-
+    function hidemessage(){
+        setTimeout(function() {
+            // emailInput.;
+            $('.invalid-feedback').hide();
+        }, 2000);
+    }
 });
