@@ -3,12 +3,12 @@
 A seamless multistep booking form integrated with the Stripe payment gateway for secure transactions.
 
 
-## Features
+## ✨ Features
 - Multistep booking process
 - Stripe payment gateway integration
 - User-friendly interface
 
-## Requirements
+## 📋 Requirements
 - WordPress 5.0 or higher
 - PHP 7.0 or higher
 - Composer
@@ -22,7 +22,7 @@ git clone https://github.com/Tapabrata-Goswami/multistep-booking.git
 cd multistep-booking
 ```
 
-## Configure Stripe Settings
+## ⚙️ Configure Stripe Settings
 
  publishable key
 ```bash
@@ -35,16 +35,16 @@ sk_test_tR3PYbcVNZZ796tH88S4VQ2u
 
 🔗 For more details, visit the official Stripe documentation [here](https://docs.stripe.com/checkout/embedded/quickstart).
 
-##  Run Your Local Server
+## 🖥️ Run Your Local Server
 
 ```bash
 php -S localhost:5555
 ```
 
-## ❤️ Support
+## 💬 Support
 For issues, please create an issue in the [GitHub repository](https://github.com/Tapabrata-Goswami/multistep-booking/issues).
 
-## Follow Me
+## 👇 Follow Me
 
 [![GitHub](https://img.shields.io/badge/GitHub--_.svg?style=social&logo=github&logoColor=black)](https://github.com/Tapabrata-Goswami)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn--_.svg?style=social&logo=linkedin&logoColor=blue)](https://www.linkedin.com/in/tapabrata-goswami/)
