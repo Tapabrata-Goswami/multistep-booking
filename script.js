@@ -2,8 +2,9 @@ jQuery(document).ready(function($) {
     var travelerCount = 1; 
     var maxTravelers = 5;
 
-    initializeFlatpickr($('#dob'));
+    // initializeFlatpickr($('.dobdata'));
     initializeFlatpickr($('#arrival'));
+    // initializeDOB();
 
     $('#add-traveler-btn').on('click', function(e) {
         e.preventDefault();
@@ -79,17 +80,79 @@ jQuery(document).ready(function($) {
     });
 
     window.showFileName = function(input) {
-        var fileName = input.files.length > 0 ? input.files[0].name : "Choose file";
-        $(input).next('.custom-file-label').text(fileName);
+
+        if(validateImage(input)){
+            var fileName = input.files.length > 0 ? input.files[0].name : "Choose file";
+            $(input).next('.custom-file-label').text(fileName);
+        }
+
     };
 
+
+
+
     function initializeFlatpickr(element) {
-        element.flatpickr({
-            dateFormat: 'd/m/Y',  // Date format in input field
-            altInput: true,
-            altFormat: 'd/m/Y',  // Display format
-            allowInput: true
-        });
+        // console.log(element);
+        // var $element = $(element);
+        // if($element.is("#arrival")){
+            element.flatpickr({
+                dateFormat: 'd/m/Y',
+                altInput: true,
+                altFormat: 'd/m/Y',
+                allowInput: true,
+                minDate: 'today',  // Restrict to today and future dates
+                onChange: function(selectedDates, dateStr) {
+                    handleServiceSelection(dateStr);
+                }
+            });
+        // }else{
+        //     element.flatpickr({
+        //         dateFormat: 'd/m/Y',
+        //         altInput: true,
+        //         altFormat: 'd/m/Y',
+        //         allowInput: true
+        //     });
+        // }
+
+    }
+
+    var timeDiff=0;
+
+    function handleServiceSelection(arrivalDateStr) {
+        var selectedDate = new Date(arrivalDateStr.split('/').reverse().join('-'));
+        var today = new Date();
+        timeDiff = Math.ceil((selectedDate - today) / (1000 * 60 * 60 * 24)); // Difference in days
+    
+        $('input[name="service"]').prop('disabled', false); // Enable all options
+        $('#priorityService').prop('checked', false); // Reset priority service selection
+    
+        if (timeDiff < 5) { // If selected date is less than 4 days away (i.e., today or 1, 2, 3 days)
+            $('#priorityService').prop('checked', true); // Force priority service selection
+            $('input[name="service"]').not('#priorityService').prop('disabled', true); // Disable other options
+        } else if (timeDiff >= 5) { // If selected date is 4 days or more
+            $('input[name="service"]').prop('disabled', false); // Enable all options
+            // Check if priority service is not already selected
+            if (!$('input[name="service"]:checked').length) {
+                $('#priorityService').prop('checked', false); // Ensure priority service is not selected
+            }
+        } else {
+            // If the selected date is before today or invalid, reset everything
+            $('input[name="service"]').prop('disabled', true); // Disable all options
+        }
+    }
+
+    function validateImage(input) {
+        const filePath = input.value;
+        const allowedExtensions = /(.jpg|.jpeg|.png|.gif)$/i; // Allowed image extensions
+    
+        if (!allowedExtensions.exec(filePath)) {
+            alert('Please upload an image file (JPG, JPEG, PNG, GIF).');
+            input.value = '';
+            return false; // Clear the input
+            input.nextElementSibling.innerHTML = 'Choose file'; // Reset label
+        } else {
+            return true;
+        }
     }
 
 
@@ -120,7 +183,11 @@ jQuery(document).ready(function($) {
         var travelerPromises = $('.traveler-card').map(function(index, element) {
             var firstName = $(this).find('input[name="first-name"]').val();
             var lastName = $(this).find('input[name="last-name"]').val();
-            var dob = $(this).find('input[name="dob"]').val();
+            // var dob = $(this).find('input[name="dob"]').val();
+            var dobday = $(this).find('#dob-day').val();
+            var dobmonth = $(this).find('#dob-month').val();
+            var dobyear = $(this).find('#dob-year').val();
+
             var gender = $(this).find('select[name="gender"]').val();
             
             // Fetch file inputs
@@ -138,11 +205,26 @@ jQuery(document).ready(function($) {
                 hidemessage();
                 hasIncompleteInfo = true;
             }
-            if (!dob || dob === undefined) {
-                $(this).find('input[type="text"][placeholder="Date of Birth"]').next('.invalid-feedback').show();
+            if(!dobday){
+                $(this).find('#dob-day').next('.invalid-feedback').show();
                 hidemessage();
                 hasIncompleteInfo = true;
             }
+            if(!dobmonth){
+                $(this).find('#dob-month').next('.invalid-feedback').show();
+                hidemessage();
+                hasIncompleteInfo = true;
+            }
+            if(!dobyear){
+                $(this).find('#dob-year').next('.invalid-feedback').show();
+                hidemessage();
+                hasIncompleteInfo = true;
+            }
+            // if (!dob || dob === undefined) {
+            //     $(this).find('input[type="text"][placeholder="Date of Birth"]').next('.invalid-feedback').show();
+            //     hidemessage();
+            //     hasIncompleteInfo = true;
+            // }
             if (!gender) {
                 $(this).find('select[name="gender"]').next('.invalid-feedback').show();
                 hidemessage();
@@ -196,10 +278,10 @@ jQuery(document).ready(function($) {
                             <hr>
                             <div class="row">
                                 <div class="col-md-6">
-                                    <strong>Date of Birth:</strong> ${dob}
+                                    <strong>Date of Birth:</strong> ${dobday} ${dobmonth}, ${dobyear}
                                 </div>
                                 <div class="col-md-6">
-                                    <strong>Gender:</strong> ${gender}
+                                    <strong>Gender:</strong> <span style="text-transform: capitalize;">${gender}</span>
                                 </div>
                             </div>
                             <hr>
@@ -345,12 +427,19 @@ jQuery(document).ready(function($) {
         });
 
         
-
+        let serviceCost = 0;
         $('input[name="service"]').prop('checked', false); // Uncheck all options
-        $('#standardService').prop('checked', true); // Set the standard service (60 dollars) as checked
+        if(timeDiff < 5){
+            $('#priorityService').prop('checked', true);
+            serviceCost = 100;
+        }else if (timeDiff >= 5){
+            $('#standardService').prop('checked', true);
+            serviceCost = 60;
+        }
+         // Set the standard service (60 dollars) as checked
 
         // Calculate the total cost with standard service (60 dollars)
-        let serviceCost = $('#standardService').val(); // Get the value from the checked radio
+         // Get the value from the checked radio
         let totalCost = serviceCost * travelerCount;
 
         // Display the total cost in the table

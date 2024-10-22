@@ -95,10 +95,13 @@ function multistep_form_shortcode() {
     <!-- Multi Step form start-->
     <div class="container-fluid main-form-container">
         <div class="container p-5">
-            <div class="col-12 d-flex align-items-center">
-                <h4 class="mb-0 main-heading-form">Your personal details</h4>
-                <div style="flex-grow: 1; height: 1px; background-color: #ccc; margin-left: 10px;"></div>
-            </div>
+                <div>
+                    <h4 class="mb-0 main-heading-form">Your personal details</h4>
+                </div>
+                <div>
+                    <p class="">These should match what's in your passport</p>
+                </div>
+                <hr class="m-0 p-0">
             <form id="traveler-form" class="mt-5" action="">
                 <!-- First Traveler Card -->
                 <div class="traveler-card">
@@ -109,8 +112,8 @@ function multistep_form_shortcode() {
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="">First Name</label>
-                                    <input type="text" class="form-control" placeholder="First Name" name="first-name" id="">
+                                    <label for="">First and middle name</label>
+                                    <input type="text" class="form-control" placeholder="First and middle name" name="first-name" id="">
                                     <div class="invalid-feedback">
                                         <div class="d-flex justify-content-start">
                                         First name is required.
@@ -131,17 +134,67 @@ function multistep_form_shortcode() {
                         </div>
                         <div class="row mt-3">
                             <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="">Date of birth</label>
-                                    <input type="text" class="form-control" placeholder="Date of Birth" name="dob" id="dob" data-toggle="flatpickr">
-                                    <div class="invalid-feedback">
-                                        <div class="d-flex justify-content-start">
-                                        Date of birth is required.
+                                <div class="row">
+                                    <label class="dateoB" for="">Date of Birth</label>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                        <select id="dob-day" class="form-control dobdata">
+                                            <option value="">Day</option>
+                                            <!-- Generate day options -->
+                                            <script>
+                                                for (let i = 1; i <= 31; i++) {
+                                                    document.write('<option value="' + i + '">' + i + '</option>');
+                                                }
+                                            </script>
+                                        </select>
+                                        <div class="invalid-feedback">
+                                            <div class="d-flex justify-content-start">Day is Required.</div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <select id="dob-month" class="form-control dobdata">
+                                                <option value="">Month</option>
+                                                <option value="January">January</option>
+                                                <option value="February">February</option>
+                                                <option value="March">March</option>
+                                                <option value="April">April</option>
+                                                <option value="may">May</option>
+                                                <option value="June">June</option>
+                                                <option value="July">July</option>
+                                                <option value="August">August</option>
+                                                <option value="September">September</option>
+                                                <option value="October">October</option>
+                                                <option value="November">November</option>
+                                                <option value="December">December</option>
+                                            </select>
+                                            <div class="invalid-feedback">
+                                            <div class="d-flex justify-content-start">Month is Required.</div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <select id="dob-year" class="form-control dobdata">
+                                                <option value="">Year</option>
+                                                <!-- Generate year options -->
+                                                <script>
+                                                    const today = new Date();
+                                                    const currentYear = today.getFullYear();
+                                                    for (let i = currentYear; i >= 1900; i--) {
+                                                        document.write('<option value="' + i + '">' + i + '</option>');
+                                                    }
+                                                </script>
+                                            </select>
+                                            <div class="invalid-feedback">
+                                            <div class="d-flex justify-content-start">Year is Required.</div>
+                                        </div>
                                         </div>
                                     </div>
                                 </div>
-                                
                             </div>
+             
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="gender">Gender</label>
