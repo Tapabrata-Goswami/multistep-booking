@@ -51,28 +51,27 @@ function enqueue_stripe_checkout_scripts() {
 add_action('wp_enqueue_scripts', 'enqueue_stripe_checkout_scripts');
 
 function create_payment_intent() {
-    // require_once 'vendor/autoload.php';
-    require_once plugin_dir_path(__FILE__) . 'vendor/autoload.php';// Ensure Stripe PHP SDK is included
+    require_once plugin_dir_path(__FILE__) . 'vendor/autoload.php';
 
-    \Stripe\Stripe::setApiKey('sk_test_tR3PYbcVNZZ796tH88S4VQ2u'); // Use your actual secret key here
+    \Stripe\Stripe::setApiKey('sk_test_tR3PYbcVNZZ796tH88S4VQ2u');
 
-    $customer_name = "John Doe"; // Replace with actual customer name
+    $customer_name = "John Doe"; 
     $customer_address = [
-        'line1' => '123 Street Name', // Replace with actual address line 1
-        'city' => 'City Name',         // Replace with actual city
-        'state' => 'State Name',       // Replace with actual state
-        'postal_code' => '123456',     // Replace with actual postal code
-        'country' => 'IN',             // Country code (IN for India)
+        'line1' => '123 Street Name', 
+        'city' => 'City Name',         
+        'state' => 'State Name',      
+        'postal_code' => '123456',    
+        'country' => 'IN',             
     ];
 
     try {
         $payment_intent = \Stripe\PaymentIntent::create([
             'amount' => 1000, // Amount in cents ($10.00)
             'currency' => 'usd',
-            'description' => 'Your payment description for export transaction', // Add your description here
+            'description' => 'Your payment description for export transaction',
             'metadata' => [
-                'customer_name' => $customer_name, // Add customer name to metadata
-                'customer_address' => json_encode($customer_address), // Add customer address to metadata
+                'customer_name' => $customer_name,
+                'customer_address' => json_encode($customer_address), 
             ],
             'shipping' => [
                 'name' => $customer_name,
@@ -87,8 +86,6 @@ function create_payment_intent() {
 }
 add_action('wp_ajax_create_payment_intent', 'create_payment_intent');
 add_action('wp_ajax_nopriv_create_payment_intent', 'create_payment_intent');
-
-
 
 
 // Shortcode to display the form
