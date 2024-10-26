@@ -38,6 +38,9 @@ add_action('wp_enqueue_scripts', 'multistep_form_enqueue_bootstrap');
 add_action('wp_enqueue_scripts', 'multistep_form_enqueue_bootstrap');
 
 
+require_once 'vendor/autoload.php';
+
+// Enqueue scripts
 function enqueue_stripe_checkout_scripts() {
     wp_enqueue_script('stripe-js', 'https://js.stripe.com/v3/', array(), null, true);
     wp_enqueue_script('stripe-embedded-checkout', plugins_url('/stripe-embedded-checkout.js', __FILE__), array('jquery'), null, true);
@@ -50,42 +53,164 @@ function enqueue_stripe_checkout_scripts() {
 }
 add_action('wp_enqueue_scripts', 'enqueue_stripe_checkout_scripts');
 
+// Create Payment Intent via AJAX
 function create_payment_intent() {
-    require_once plugin_dir_path(__FILE__) . 'vendor/autoload.php';
+    \Stripe\Stripe::setApiKey('sk_test_tR3PYbcVNZZ796tH88S4VQ2u'); // Use your Stripe secret key
 
-    \Stripe\Stripe::setApiKey('sk_test_tR3PYbcVNZZ796tH88S4VQ2u');
+    // Capture incoming POST data
+    $input = file_get_contents('php://input');
+    $body = json_decode($input, true);
 
-    $customer_name = "John Doe"; 
+    // Extract data from the body
+    $customer_name = sanitize_text_field($body['generalDetails']['phone']);
+    $total_cost = $body['totalCost'] * 100;
+    $travelers = isset($body['travelers']) ? $body['travelers'] : [];
+
     $customer_address = [
-        'line1' => '123 Street Name', 
-        'city' => 'City Name',         
-        'state' => 'State Name',      
-        'postal_code' => '123456',    
-        'country' => 'IN',             
+        'line1' => '1234 Elm Street',
+        'postal_code' => '123456',
+        'city' => 'Springfield',
+        'state' => 'IL',
+        'country' => 'US'
     ];
 
+    $email = sanitize_email($body['generalDetails']['email']);
+    if (!is_email($email)) {
+        wp_send_json_error(['message' => 'Invalid email address.']);
+        return;
+    }
+
+    // Create the Payment Intent
     try {
-        $payment_intent = \Stripe\PaymentIntent::create([
-            'amount' => 1000, // Amount in cents ($10.00)
+        $paymentIntent = \Stripe\PaymentIntent::create([
+            'amount' => $total_cost, // Convert to cents
             'currency' => 'usd',
-            'description' => 'Your payment description for export transaction',
+            'description' => 'Payment for travelers booking',
             'metadata' => [
                 'customer_name' => $customer_name,
-                'customer_address' => json_encode($customer_address), 
+                'customer_address' => json_encode($customer_address), // Store address as JSON
             ],
             'shipping' => [
                 'name' => $customer_name,
-                'address' => $customer_address,
+                'address' => [
+                    'line1' => $customer_address['line1'],
+                    'postal_code' => $customer_address['postal_code'],
+                    'city' => isset($customer_address['city']) ? $customer_address['city'] : '',
+                    'state' => isset($customer_address['state']) ? $customer_address['state'] : '',
+                    'country' => $customer_address['country'],
+                ],
             ],
         ]);
 
-        wp_send_json_success(['clientSecret' => $payment_intent->client_secret]);
+        wp_send_json_success(['clientSecret' => $paymentIntent->client_secret]);
+        
+    } catch (\Stripe\Exception\ApiErrorException $e) {
+        wp_send_json_error(['message' => 'Stripe error: ' . $e->getMessage()]);
+        return;
     } catch (Exception $e) {
-        wp_send_json_error(['message' => $e->getMessage()]);
+        wp_send_json_error(['message' => 'General error: ' . $e->getMessage()]);
+        return;
     }
+
+    wp_die(); 
 }
 add_action('wp_ajax_create_payment_intent', 'create_payment_intent');
 add_action('wp_ajax_nopriv_create_payment_intent', 'create_payment_intent');
+
+
+
+
+add_action('rest_api_init', function() {
+    register_rest_route('custom/v1', '/send-booking-email', array(
+        'methods' => 'POST',
+        'callback' => 'send_booking_confirmation_email',
+        'permission_callback' => '__return_true' // Adjust this as needed for security
+    ));
+});
+
+function send_booking_confirmation_email($request) {
+
+    $params = $request->get_json_params();
+    
+    $paymentIntent = $params['paymentIntent'];
+    $total_cost = $params['totalCost'] * 100;
+    $travelers = isset($params['travelers']) ? $params['travelers'] : [];
+    $email = $params['generalDetails']['email'];
+
+    $subject = "Payment Successful - Booking Confirmation";
+
+    // Start email message body
+    $message = "
+            <html>
+            <head>
+              <title>Booking Confirmation</title>
+              <style>
+                body { font-family: Arial, sans-serif; color: #333; }
+                .container { width: 100%; max-width: 600px; margin: auto; }
+                .header { background-color: #4CAF50; color: white; padding: 10px 0; text-align: center; }
+                .content { padding: 20px; }
+                .details, .travelers { margin-bottom: 20px; }
+                .details h2, .travelers h2 { border-bottom: 2px solid #4CAF50; padding-bottom: 5px; }
+                .details p, .travelers p { line-height: 1.6; }
+                .footer { text-align: center; font-size: 12px; color: #777; margin-top: 20px; }
+                .image { height: 150px; width: 150px; object-fit: contain; }
+              </style>
+            </head>
+            <body>
+              <div class='container'>
+                <div class='header'>
+                  <h1>Payment Successful</h1>
+                </div>
+                <div class='content'>
+                  <p>Dear Traveler,</p>
+                  <p>Thank you for your payment! We are pleased to confirm your booking.</p>
+            
+                  <div class='details'>
+                    <h2>Booking Details</h2>
+                    <p><strong>Transaction ID:</strong> " . esc_html($paymentIntent) . "</p>
+                    <p><strong>Total Cost:</strong> $" . number_format($total_cost / 100, 2) . "</p>
+                    <p><strong>Email:</strong> " . esc_html($email) . "</p>
+                    <p><strong>Phone:</strong> " . esc_html($params['generalDetails']['phone']) . "</p>
+                    <p><strong>Arrival Date:</strong> " . esc_html($params['generalDetails']['arrivalDate']) . "</p>
+                  </div>
+            
+                  <div class='travelers'>
+                    <h2>Traveler Details</h2>";
+
+                    // Loop through travelers and add their details to the email
+                    foreach ($travelers as $index => $traveler) {
+                        $message .= "
+                        <p><strong>Traveler " . ($index + 1) . ":</strong></p>
+                        <p>Name: " . esc_html($traveler['firstName']) . " " . esc_html($traveler['lastName']) . "</p>
+                        <p>Date of Birth: " . esc_html($traveler['dob']) . "</p>
+                        <p>Gender: " . esc_html($traveler['gender']) . "</p>
+                        <img class='image' src='" . esc_url($traveler['photoFile']) . "' alt='Traveler Photo'>
+                        <img class='image' src='" . esc_url($traveler['passportFile']) . "' alt='Traveler Passport'>";
+                    }
+            
+                  $message .= "
+                  </div>
+                </div>
+                <div class='footer'>
+                  <p>If you have any questions, feel free to contact our support team.</p>
+                  <p>&copy; " . date('Y') . " Your Company. All rights reserved.</p>
+                </div>
+              </div>
+            </body>
+            </html>
+            ";
+
+    $headers = array('Content-Type: text/html; charset=UTF-8');
+
+    if (wp_mail($email, $subject, $message,$headers)) {
+        return new WP_REST_Response(['success' => true, 'message' => 'Successfully mail sent'], 200);
+    } else {
+        return new WP_REST_Response(['success' => false, 'message' => 'Failed to mail sent'], 500);
+    }
+}
+
+
+
 
 
 // Shortcode to display the form
@@ -374,7 +499,10 @@ function multistep_form_shortcode() {
                     </div>
                     
 
-
+                            <div id="loading-icon" style="display:none; text-align: center;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 24px;"></i>
+                                <p>Please wait...</p>
+                            </div>
                         <div id="stripe-checkout-element"></div>
 
                         <form id="payment-form">
@@ -390,9 +518,6 @@ function multistep_form_shortcode() {
 
         </div>
     </div>
-
-
-
 
     <?php
     return ob_get_clean();

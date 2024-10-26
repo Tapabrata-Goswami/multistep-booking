@@ -159,9 +159,8 @@ jQuery(document).ready(function($) {
     $('#next').on('click', function(e) {
         e.preventDefault();
 
-        // Clear previous details
         $('#traveler-details-list').html('');
-
+        var travelerData = [];
         var hasIncompleteInfo = false; 
         var travelerCount = 0;
         function readFileAsBase64(file) {
@@ -261,6 +260,15 @@ jQuery(document).ready(function($) {
                 var passportBase64 = results[0];
                 var photoBase64 = results[1];
 
+                travelerData.push({
+                    firstName: firstName,
+                    lastName: lastName,
+                    dob: `${dobday}-${dobmonth}-${dobyear}`,
+                    gender: gender,
+                    passportFile: passportBase64,
+                    photoFile: photoBase64
+                });
+
                 var summaryHtml = `
                     <div class="card mt-3">
                         <div class="card-header">
@@ -275,7 +283,7 @@ jQuery(document).ready(function($) {
                                     <strong>Last Name:</strong> ${lastName}
                                 </div>
                             </div>
-                            <hr>
+                            <hr style="margin:10px;">
                             <div class="row">
                                 <div class="col-md-6">
                                     <strong>Date of Birth:</strong> ${dobday} ${dobmonth}, ${dobyear}
@@ -284,7 +292,7 @@ jQuery(document).ready(function($) {
                                     <strong>Gender:</strong> <span style="text-transform: capitalize;">${gender}</span>
                                 </div>
                             </div>
-                            <hr>
+                            <hr style="margin:10px;">
                             <div class="row">
                                 <div class="col-md-6">
                                     <strong>Passport File:</strong><br>
@@ -364,6 +372,19 @@ jQuery(document).ready(function($) {
             }
             if (hasIncompleteInfo) return;
 
+            var generalDetails = {
+                phone: phone,
+                email: email,
+                arrivalDate: arrivalDate
+            };
+
+            var formData = {
+                generalDetails: generalDetails,
+                travelers: travelerData
+            };
+
+            localStorage.setItem('formData', JSON.stringify(formData));
+    
             // Calculate total cost
             // var totalCost = travelerCount * costPerTraveler;
 
@@ -376,26 +397,26 @@ jQuery(document).ready(function($) {
                     <div class="card-body p-3">
                         <div class="row">
                             <div class="col-md-6">
-                                Phone
+                                <strong>Phone </strong>
                             </div>
                             <div class="col-md-6">
                                 ${phone}
                             </div>
                         </div>
-                        <hr>
+                        <hr style="margin:10px;">
                         <div class="row">
                             <div class="col-md-6">
-                                Email
+                               <strong> Email </strong>
                             </div>
                             <div class="col-md-6">
                             ${email}
                             </div>
                         </div>
-                        <hr>
+                        <hr style="margin:10px;">
                     
                         <div class="row">
                             <div class="col-md-6">
-                                Arrival date
+                               <strong> Arrival date </strong>
                             </div>
                             <div class="col-md-6">
                             ${arrivalDate}
@@ -441,15 +462,34 @@ jQuery(document).ready(function($) {
         // Calculate the total cost with standard service (60 dollars)
          // Get the value from the checked radio
         let totalCost = serviceCost * travelerCount;
+        
+        if(timeDiff < 5){
+            $('.table-of-total tbody').html(`
+                <tr>
+                    <td>${$('#priorityService').next().text()}</td>
+                    <td>${travelerCount}</td>
+                    <td>$${totalCost.toFixed(2)}</td>
+                </tr>
+            `);
+        }else if(timeDiff >= 5){
+            $('.table-of-total tbody').html(`
+                <tr>
+                    <td>${$('#standardService').next().text()}</td>
+                    <td>${travelerCount}</td>
+                    <td>$${totalCost.toFixed(2)}</td>
+                </tr>
+            `);
+        }
 
+        let dataToStore = {
+            totalCost: totalCost.toFixed(2),
+            travelerQnty: travelerCount
+        };
+
+        localStorage.setItem('costDetails', JSON.stringify(dataToStore));
+        
         // Display the total cost in the table
-        $('.table-of-total tbody').html(`
-            <tr>
-                <td>${$('#standardService').next().text()}</td>
-                <td>${travelerCount}</td>
-                <td>$${totalCost.toFixed(2)}</td>
-            </tr>
-        `);
+
         $('.table-of-total tfoot th:nth-child(3)').text(`$${totalCost.toFixed(2)}`);
         
 
@@ -469,6 +509,13 @@ jQuery(document).ready(function($) {
             </tr>
         `);
         $('.table-of-total tfoot th:nth-child(3)').text(`$${totalCost.toFixed(2)}`);
+        
+        let dataToStore = {
+            totalCost: totalCost,
+            travelerQnty: travelerCount
+        };
+
+        localStorage.setItem('costDetails', JSON.stringify(dataToStore));
     });
 
     function hidemessage(){
@@ -478,3 +525,121 @@ jQuery(document).ready(function($) {
         }, 2000);
     }
 });
+
+
+jQuery(document).ready(function ($) {
+
+
+    // Function to get URL parameters
+    function getUrlParameters() {
+        const params = {};
+        const queryString = window.location.search.substring(1);
+        const pairs = queryString.split('&');
+
+        pairs.forEach(function (pair) {
+            const [key, value] = pair.split('=');
+            params[decodeURIComponent(key)] = decodeURIComponent(value);
+        });
+
+        return params;
+    }
+
+    // Get URL parameters
+    const urlParams = getUrlParameters();
+
+    // Check for payment_intent and redirect_status
+    const paymentIntent = urlParams.payment_intent;
+    const paymentIntentClientSecret = urlParams.payment_intent_client_secret;
+    const redirectStatus = urlParams.redirect_status;
+
+    if (redirectStatus === 'succeeded') {
+        $(".main-form-container").css("display", "none");
+        // Payment was successful, show the thank you message
+        $("body").html(`
+            <div style="text-align: center; margin-top: 50px;">
+                <h1>Thank You for Your Payment!</h1>
+                <p>Your payment was successful.</p>
+                <p><strong>Payment Intent ID:</strong> ${paymentIntent}</p>
+                <p><strong>Client Secret:</strong> ${paymentIntentClientSecret}</p>
+                <button id="back-button" class="btn btn-primary" ">Back</button>
+            </div>
+        `);
+            // Clear the URL and go back when the back button is clicked
+        $("#back-button").on("click", function() {
+            window.history.replaceState({}, document.title, window.location.pathname);
+            // Optionally, redirect to the main page or wherever you want
+            window.location.href = 'https://portfolio-wordpress.tapabrata.me/plugintest/'; // Change '/' to your desired URL
+        });
+        
+        
+        var costDetails = JSON.parse(localStorage.getItem('costDetails'));
+        var formData = JSON.parse(localStorage.getItem('formData'));
+        
+        if (costDetails && formData) {
+            dataFetched = true; 
+        
+            // Extract values
+            var totalCost = costDetails.totalCost; // Already in cents
+            var travelerQnty = costDetails.travelerQnty; // Ensure this value is needed
+            var generalDetails = formData.generalDetails;
+            var travelers = formData.travelers;
+        
+            fetch('https://portfolio-wordpress.tapabrata.me/plugintest/wp-json/custom/v1/send-booking-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    paymentIntent: paymentIntent,
+                    totalCost: totalCost,
+                    travelerQnty: travelerQnty, // Include if needed
+                    generalDetails: generalDetails,
+                    travelers: travelers
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    console.log(data);
+                } else {
+                    console.error(data);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        
+        
+    }
+});
+
+
+jQuery(document).ready(function ($) {
+    $("#next").on("click", function (event) {
+        event.preventDefault(); // Prevent the default form submission
+        
+        // Show the loading icon
+        $("#loading-icon").show();
+        $("#submit").prop("disabled", true); // Disable the submit button
+
+        // Simulate a delay of 4 seconds (4000 milliseconds)
+        setTimeout(function () {
+            // You can place your payment processing code here
+            // Hide the loading icon after 4 seconds
+            $("#loading-icon").hide();
+            $("#submit").prop("disabled", false); // Re-enable the submit button
+        }, 6000);
+
+        // You would typically call your Stripe payment processing here
+        // Example: stripe.confirmPayment({...}).then(...);
+    });
+});
+
+
+
+
