@@ -118,8 +118,6 @@ add_action('wp_ajax_create_payment_intent', 'create_payment_intent');
 add_action('wp_ajax_nopriv_create_payment_intent', 'create_payment_intent');
 
 
-
-
 add_action('rest_api_init', function() {
     register_rest_route('custom/v1', '/send-booking-email', array(
         'methods' => 'POST',

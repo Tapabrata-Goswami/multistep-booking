@@ -244,13 +244,6 @@ jQuery(document).ready(function($) {
                 hasIncompleteInfo = true;
             }
 
-            // Skip any traveler card with incomplete information
-            // if (!firstName || !lastName || !dob || !gender) {
-            //     alert('Please fill out all fields for traveler ' + (index + 1));
-            //     hasIncompleteInfo = true;
-            //     return false; // Stop processing if incomplete
-            // }
-
             travelerCount++;
 
             return Promise.all([
@@ -384,10 +377,7 @@ jQuery(document).ready(function($) {
             };
 
             localStorage.setItem('formData', JSON.stringify(formData));
-    
-            // Calculate total cost
-            // var totalCost = travelerCount * costPerTraveler;
-
+            localStorage.setItem('nextStep',true);
             // Append general details and total cost to the summary
             var generalDetailsHtml = `
                 <div class="card mt-3">
