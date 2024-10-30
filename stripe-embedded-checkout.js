@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     stripe.confirmPayment({
                                         elements,
                                         confirmParams: {
-                                            return_url: 'https://portfolio-wordpress.tapabrata.me/plugintest/'
+                                            return_url: 'https://expresseta.com/application-form/'
                                         }
                                     }).then(function (result) {
                                         if (result.error) {

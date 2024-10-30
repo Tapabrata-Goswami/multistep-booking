@@ -30,6 +30,8 @@ function multistep_form_enqueue_bootstrap() {
     
     // Enqueue Flatpickr JS
     wp_enqueue_script('flatpickr-js', 'https://cdn.jsdelivr.net/npm/flatpickr', array('jquery'), null, true);
+    // Enqueue Font Awesome
+    wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
 
     wp_enqueue_style('multistep-form-style', plugins_url('style.css', __FILE__));
     wp_enqueue_script('multistep-form-script', plugins_url('script.js', __FILE__), array('jquery'), null, true);
@@ -83,7 +85,8 @@ function create_payment_intent() {
     // Create the Payment Intent
     try {
         $paymentIntent = \Stripe\PaymentIntent::create([
-            'amount' => $total_cost, // Convert to cents
+          //  'amount' => $total_cost, // Convert to cents
+           'amount' => 50,
             'currency' => 'usd',
             'description' => 'Payment for travelers booking',
             'metadata' => [
@@ -125,6 +128,20 @@ add_action('rest_api_init', function() {
         'permission_callback' => '__return_true' // Adjust this as needed for security
     ));
 });
+
+
+function save_image_from_base64($base64_img, $file_name) {
+    $upload_dir = wp_upload_dir();
+    $img_data = explode(',', $base64_img);
+    $decoded_image = base64_decode($img_data[1]);
+    $file = $upload_dir['path'] . '/' . $file_name;
+    
+    file_put_contents($file, $decoded_image);
+
+    $file_url = $upload_dir['url'] . '/' . $file_name;
+    return $file_url;
+}
+
 
 function send_booking_confirmation_email($request) {
 
@@ -177,13 +194,15 @@ function send_booking_confirmation_email($request) {
 
                     // Loop through travelers and add their details to the email
                     foreach ($travelers as $index => $traveler) {
+                        $photo_url = save_image_from_base64($traveler['photoFile'], "traveler_photo_{$index}.jpg");
+                        $passport_url = save_image_from_base64($traveler['passportFile'], "traveler_passport_{$index}.jpg");
                         $message .= "
                         <p><strong>Traveler " . ($index + 1) . ":</strong></p>
                         <p>Name: " . esc_html($traveler['firstName']) . " " . esc_html($traveler['lastName']) . "</p>
                         <p>Date of Birth: " . esc_html($traveler['dob']) . "</p>
                         <p>Gender: " . esc_html($traveler['gender']) . "</p>
-                        <img class='image' src='" . esc_url($traveler['photoFile']) . "' alt='Traveler Photo'>
-                        <img class='image' src='" . esc_url($traveler['passportFile']) . "' alt='Traveler Passport'>";
+                        <img class='image' src='" . esc_url($photo_url) . "' alt='Traveler Photo'>
+                        <img class='image' src='" . esc_url($passport_url) . "' alt='Traveler Passport'>";
                     }
             
                   $message .= "
@@ -191,16 +210,93 @@ function send_booking_confirmation_email($request) {
                 </div>
                 <div class='footer'>
                   <p>If you have any questions, feel free to contact our support team.</p>
-                  <p>&copy; " . date('Y') . " Your Company. All rights reserved.</p>
+                  <p>&copy; " . date('Y') . " ExpressETA. All rights reserved.</p>
                 </div>
               </div>
             </body>
             </html>
             ";
+    
+    $tfname = $travelers[0]['firstName'];
+    
+    
+    $message2 = "
+            <html>
+            <head>
+              <title>Kenya eTA Booking Confirmation</title>
+              <style>
+                 body { font-family: Arial, sans-serif; color: #333; }
+                .container { width: 100%; max-width: 600px; margin: auto; }
+                .header { background-color: #4CAF50; color: white; padding: 10px 0; text-align: center; }
+                .details, .travelers { margin-bottom: 20px; }
+                .details h2, .travelers h2 { border-bottom: 2px solid #4CAF50; padding-bottom: 5px; }
+                .details p, .travelers p { line-height: 1.6; }
+                .content { padding: 20px; }
+                .footer { text-align: center; font-size: 12px; color: #777; margin-top: 20px; }
+                .image { height: 150px; width: 150px; object-fit: contain; }
+              </style>
+            </head>
+            <body>
+              <div class='container'>
+                <div class='header'>
+                  <h1>Kenya eTA Application - Payment Successful</h1>
+                </div>
+                <div class='content'>
+                  <p>Dear " . esc_html($tfname) . ",</p>
+                  <p>Thank you for choosing our service to process your Kenya eTA. We are pleased to confirm that your payment has been successfully received, and your visa application is now in progress.</p>
+            
+                <div class='details'>
+                    <h2>Booking Details</h2>
+                    <p><strong>Total Cost:</strong> $" . number_format($total_cost / 100, 2) . "</p>
+                    <p><strong>Email:</strong> " . esc_html($email) . "</p>
+                    <p><strong>Phone:</strong> " . esc_html($params['generalDetails']['phone']) . "</p>
+                    <p><strong>Arrival Date:</strong> " . esc_html($params['generalDetails']['arrivalDate']) . "</p>
+                  </div>
+                  
+                  <div class='travelers'>
+                    <h2>Traveler Details</h2>";
 
-    $headers = array('Content-Type: text/html; charset=UTF-8');
+                    // Loop through travelers and add their details to the email
+                    foreach ($travelers as $index => $traveler) {
+                        $photo_url = save_image_from_base64($traveler['photoFile'], "traveler_photo_{$index}.jpg");
+                        $passport_url = save_image_from_base64($traveler['passportFile'], "traveler_passport_{$index}.jpg");
+                        $message2 .= "
+                        <p><strong>Traveler " . ($index + 1) . ":</strong></p>
+                        <p>Name: " . esc_html($traveler['firstName']) . " " . esc_html($traveler['lastName']) . "</p>
+                        <p>Date of Birth: " . esc_html($traveler['dob']) . "</p>
+                        <p>Gender: " . esc_html($traveler['gender']) . "</p>
+                        <img class='image' src='" . esc_url($photo_url) . "' alt='Traveler Photo'>
+                        <img class='image' src='" . esc_url($passport_url) . "' alt='Traveler Passport'>";
+                    }
+            
+                  $message2 .= "
+                  </div>
+                  
+                  <p><strong>Transaction ID:</strong> " . esc_html($paymentIntent) . "</p>
+                  <p><strong>Application Status:</strong> Processing</p>
+            
+                  <p>While we process your application, feel free to explore our <a href='https://expresseta.com/blog/'>blog</a>, where you'll find tips on what to expect in Kenya, travel recommendations, and more insights to help make your journey unforgettable.</p>
+            
+                  <p>You will receive another email with your eTA once it has been approved and is ready for download.</p>
+            
+                  <p>Should you have any questions or require further assistance, please feel free to reach out to us at <a href='mailto:support@expresseta.com'>support@expresseta.com</a>.</p>
+            
+                  <p>Thank you for entrusting us with your travel needs. We look forward to assisting you and wish you a smooth journey to Kenya.</p>
+                  <p>Warm regards,</p>
+                  <p ><strong>Your ExpressETA Team</strong></p>
+                </div>
+                <div class='footer'>
+                   <p>If you have any questions, feel free to contact our support team.</p>
+                  <p>&copy; " . date('Y') . " ExpressETA. All rights reserved.</p>
+                </div>
+              </div>
+            </body>
+            </html>
+            ";
+            
+            $headers = array('Content-Type: text/html; charset=UTF-8');
 
-    if (wp_mail($email, $subject, $message,$headers)) {
+    if (wp_mail("support@expresseta.com", $subject, $message,$headers) && wp_mail($email, $subject, $message2,$headers)) {
         return new WP_REST_Response(['success' => true, 'message' => 'Successfully mail sent'], 200);
     } else {
         return new WP_REST_Response(['success' => false, 'message' => 'Failed to mail sent'], 500);
@@ -216,8 +312,8 @@ function multistep_form_shortcode() {
     ob_start();
     ?>
     <!-- Multi Step form start-->
-    <div class="container-fluid main-form-container">
-        <div class="container p-5">
+    <div class="container-fluid main-form-container" style="margin-top:-40px">
+        <div class="container">
                 <div>
                     <h4 class="mb-0 main-heading-form">Your personal details</h4>
                 </div>
@@ -442,8 +538,8 @@ function multistep_form_shortcode() {
 
     </div>
 
-    <div class="container-fluid p-5">
-        <div id="submitted-details" class="container pt-5" style="display:none">
+    <div class="container-fluid" style="margin-top:-40px">
+        <div id="submitted-details" class="container" style="display:none">
             
             <div class="row gap-">
                 
@@ -454,11 +550,11 @@ function multistep_form_shortcode() {
                     </div>
                 </div>
                 <div class="col-md-6 sticky-part">
-                    <h3>Payment Calculation</h3>
+                    <!--<h3>Please choose the Service you require<span style="color:red;">*</span></h3>-->
                     <div class="row">
                         <div class="col-md-12">
-                            <h5 class="h4">Choose the service you require <span style="color:red;">*</span></h5>
-                            <div class="form-group mt-3">
+                            <h5 class="h4">Please choose the service you require<span style="color:red;">*</span></h5>
+                            <div class="form-group mt-3 py-3">
                                 <input type="radio" name="service" id="standardService" value="60"> <span id="title-60">Standard service: E-visa within 3 Days - $60.00</span>
                             </div>
                             <div class="form-group">
@@ -497,25 +593,25 @@ function multistep_form_shortcode() {
                     </div>
                     
 
-                            <div id="loading-icon" style="display:none; text-align: center;">
-                                <i class="fas fa-spinner fa-spin" style="font-size: 24px;"></i>
-                                <p>Please wait...</p>
-                            </div>
-                        <div id="stripe-checkout-element"></div>
-
-                        <form id="payment-form">
-                            <div id="payment-element">
-                                <!-- Stripe.js injects the Payment Element here -->
-                            </div>
-                            <button class="btn btn-primary mt-3" id="submit">Pay</button>
-                            <div id="error-message"></div>
-                        </form>
+                    <div id="loading-icon" style="display:none; text-align: center;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 24px;"></i>
+                        <p>Please wait...</p>
                     </div>
+                    <div id="stripe-checkout-element"></div>
+
+                    <form id="payment-form">
+                        <div id="payment-element">
+                            <!-- Stripe.js injects the Payment Element here -->
+                        </div>
+                        <button class="btn btn-primary mt-3" id="submit">Pay</button>
+                        <div id="error-message"></div>
+                    </form>
                 </div>
             </div>
-
         </div>
+
     </div>
+
 
     <?php
     return ob_get_clean();

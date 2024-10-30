@@ -270,29 +270,29 @@ jQuery(document).ready(function($) {
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <strong>First Name:</strong> ${firstName}
+                                    <span class = "stng">First Name:</span> ${firstName}
                                 </div>
                                 <div class="col-md-6">
-                                    <strong>Last Name:</strong> ${lastName}
-                                </div>
-                            </div>
-                            <hr style="margin:10px;">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <strong>Date of Birth:</strong> ${dobday} ${dobmonth}, ${dobyear}
-                                </div>
-                                <div class="col-md-6">
-                                    <strong>Gender:</strong> <span style="text-transform: capitalize;">${gender}</span>
+                                    <span class = "stng">Last Name:</span> ${lastName}
                                 </div>
                             </div>
                             <hr style="margin:10px;">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <strong>Passport File:</strong><br>
+                                    <span class = "stng">Date of Birth:</span> ${dobday} ${dobmonth}, ${dobyear}
+                                </div>
+                                <div class="col-md-6">
+                                    <span class = "stng">Gender:</span> <span style="text-transform: capitalize;">${gender}</span>
+                                </div>
+                            </div>
+                            <hr style="margin:10px;">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <span class = "stng">Passport File:</span><br>
                             ${passportBase64 ? `<img src="${passportBase64}" alt="Passport" width="100">` : 'No file uploaded'}
                                 </div>
                                 <div class="col-md-6">
-                                   <strong>Photo File:</strong><br>
+                                   <span class = "stng">Photo File:</span><br>
                             ${photoBase64 ? `<img src="${photoBase64}" alt="Photo" width="100">` : 'No file uploaded'}
                                 </div>
                             </div>
@@ -387,7 +387,7 @@ jQuery(document).ready(function($) {
                     <div class="card-body p-3">
                         <div class="row">
                             <div class="col-md-6">
-                                <strong>Phone </strong>
+                                <span class ="stng">Phone </span>
                             </div>
                             <div class="col-md-6">
                                 ${phone}
@@ -396,7 +396,7 @@ jQuery(document).ready(function($) {
                         <hr style="margin:10px;">
                         <div class="row">
                             <div class="col-md-6">
-                               <strong> Email </strong>
+                               <span class = "stng"> Email </span>
                             </div>
                             <div class="col-md-6">
                             ${email}
@@ -406,7 +406,7 @@ jQuery(document).ready(function($) {
                     
                         <div class="row">
                             <div class="col-md-6">
-                               <strong> Arrival date </strong>
+                               <span class = "stng"> Arrival date </span>
                             </div>
                             <div class="col-md-6">
                             ${arrivalDate}
@@ -464,7 +464,7 @@ jQuery(document).ready(function($) {
         }else if(timeDiff >= 5){
             $('.table-of-total tbody').html(`
                 <tr>
-                    <td>${$('#standardService').next().text()}</td>
+                    <td class = "lh-2">${$('#standardService').next().text()}</td>
                     <td>${travelerCount}</td>
                     <td>$${totalCost.toFixed(2)}</td>
                 </tr>
@@ -547,10 +547,8 @@ jQuery(document).ready(function ($) {
         // Payment was successful, show the thank you message
         $("body").html(`
             <div style="text-align: center; margin-top: 50px;">
-                <h1>Thank You for Your Payment!</h1>
-                <p>Your payment was successful.</p>
-                <p><strong>Payment Intent ID:</strong> ${paymentIntent}</p>
-                <p><strong>Client Secret:</strong> ${paymentIntentClientSecret}</p>
+                <h3>Thank you for your payment!</h3>
+                <p>Your Kenya eTA is now being processed, and a confirmation email has been sent to you.</p>
                 <button id="back-button" class="btn btn-primary" ">Back</button>
             </div>
         `);
@@ -558,7 +556,7 @@ jQuery(document).ready(function ($) {
         $("#back-button").on("click", function() {
             window.history.replaceState({}, document.title, window.location.pathname);
             // Optionally, redirect to the main page or wherever you want
-            window.location.href = 'https://portfolio-wordpress.tapabrata.me/plugintest/'; // Change '/' to your desired URL
+            window.location.href = 'https://expresseta.com/application-form/'; // Change '/' to your desired URL
         });
         
         
@@ -574,7 +572,7 @@ jQuery(document).ready(function ($) {
             var generalDetails = formData.generalDetails;
             var travelers = formData.travelers;
         
-            fetch('https://portfolio-wordpress.tapabrata.me/plugintest/wp-json/custom/v1/send-booking-email', {
+            fetch('https://expresseta.com/wp-json/custom/v1/send-booking-email', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

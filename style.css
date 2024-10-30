@@ -21,6 +21,8 @@
 select.form-control {
     font-family: 'Montserrat', sans-serif !important;
     font-size: 14px;
+    background-image:none;
+    height: 50px;
 }
 
 select.form-control option {
@@ -31,6 +33,11 @@ select.form-control option {
 #add-traveler-btn{
     padding:6px 25px;
     font-size: 14px;
+    color: blue;
+}
+
+#add-traveler-btn:hover{
+    color: #fff;
 }
 .custom-file {
     position: relative;
@@ -107,7 +114,7 @@ h5{
 } */
 
 .divider{
-    margin-top: 40px;
+    margin-top: 40px !important;
     background-color: #b9b8b8;
 }
 
@@ -127,12 +134,18 @@ h5{
 .dobdata {
     /* width: 100px; Adjust width as necessary */
     /* margin-right: 5px; Space between fields */
-    padding: 5px; /* Padding for better touch target */
+    padding: 10px; /* Padding for better touch target */
     border: 1px solid #ccc; /* Add border */
     border-radius: 4px; /* Rounded corners */
     appearance: auto; /* Ensure default appearance for dropdown */
     -moz-appearance: auto; /* Firefox compatibility */
     -webkit-appearance: auto; /* Safari compatibility */
+}
+
+@media only screen and (max-width:768px){
+    .dobdata {
+        margin-bottom:10px;
+    }
 }
 
 #next{
@@ -144,7 +157,11 @@ h5{
 .remove-traveler-btn{
     font-size: 12px;
     padding: 4px 10px;
+    color: #dc3545 !important;
+}
 
+.remove-traveler-btn:hover{
+    color: #fff !important;
 }
 
 
@@ -167,4 +184,10 @@ h5{
 
 .hello{
     
+}
+
+.stng{
+        font-weight: 600 !important;
+    color: #3f3f3f;
+
 }
