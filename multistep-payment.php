@@ -32,6 +32,7 @@ function multistep_form_enqueue_bootstrap() {
     wp_enqueue_script('flatpickr-js', 'https://cdn.jsdelivr.net/npm/flatpickr', array('jquery'), null, true);
     // Enqueue Font Awesome
     wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
+    // wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css');
 
     wp_enqueue_style('multistep-form-style', plugins_url('style.css', __FILE__));
     wp_enqueue_script('multistep-form-script', plugins_url('script.js', __FILE__), array('jquery'), null, true);
@@ -85,8 +86,8 @@ function create_payment_intent() {
     // Create the Payment Intent
     try {
         $paymentIntent = \Stripe\PaymentIntent::create([
-          //  'amount' => $total_cost, // Convert to cents
-           'amount' => 50,
+            'amount' => $total_cost, // Convert to cents
+        //   'amount' => 50,
             'currency' => 'usd',
             'description' => 'Payment for travelers booking',
             'metadata' => [
@@ -470,7 +471,7 @@ function multistep_form_shortcode() {
                 <div class="row mt-2">
                     <div class="col-md-12 text-center">
                         <button type="button" id="add-traveler-btn" class="btn btn-outline-primary text-center">
-                            <i class="fas fa-user-plus"></i> Add Traveler
+                             Add Traveler
                         </button>
                     </div>
                 </div>

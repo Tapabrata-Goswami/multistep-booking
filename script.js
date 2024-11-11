@@ -425,7 +425,7 @@ jQuery(document).ready(function($) {
             // Check if the back button already exists, if not, create it
             if ($('#back-to-form-btn').length === 0) {
                 var backButton = `<button id="back-to-form-btn" class="btn btn-lg btn-primary mt-4 px-5">
-    <i class="fas fa-arrow-left"></i> Back</button>`;
+     Back</button>`;
                 $('#traveler-details-list').append(backButton);
 
                 // Handle the "Back to Form" button click
@@ -629,5 +629,8 @@ jQuery(document).ready(function ($) {
 });
 
 
-
+jQuery(document).ready(function($){
+    $("#yoast-breadcrumbs").addClass('container');
+    $("#yoast-breadcrumbs span:first").css("margin-left","11px");
+});
 
